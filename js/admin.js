@@ -19,74 +19,206 @@ import {
 
 
 const adminLogoutBtn =
-    document.getElementById("adminLogoutBtn");
+    document.getElementById(
+        "adminLogoutBtn"
+    );
 
 const adminComplaintsList =
-    document.getElementById("adminComplaintsList");
+    document.getElementById(
+        "adminComplaintsList"
+    );
 
 
 let currentAdmin = null;
+
+let allComplaints = [];
+
+let searchTerm = "";
+
+let selectedStatus = "All";
+
+
+/* =========================
+   CREATE FILTER CONTROLS
+========================= */
+
+const filterContainer =
+    document.createElement("div");
+
+
+filterContainer.className =
+    "admin-filter-bar";
+
+
+filterContainer.innerHTML = `
+
+    <input
+        type="text"
+        id="complaintSearch"
+        placeholder="Search complaints by title, category or email..."
+    >
+
+
+    <select id="complaintStatusFilter">
+
+        <option value="All">
+            All Statuses
+        </option>
+
+        <option value="Pending">
+            Pending
+        </option>
+
+        <option value="In Progress">
+            In Progress
+        </option>
+
+        <option value="Resolved">
+            Resolved
+        </option>
+
+    </select>
+
+`;
+
+
+adminComplaintsList.parentElement
+    .insertBefore(
+        filterContainer,
+        adminComplaintsList
+    );
+
+
+const complaintSearch =
+    document.getElementById(
+        "complaintSearch"
+    );
+
+
+const complaintStatusFilter =
+    document.getElementById(
+        "complaintStatusFilter"
+    );
+
+
+/* =========================
+   SEARCH
+========================= */
+
+complaintSearch.addEventListener(
+    "input",
+    () => {
+
+        searchTerm =
+            complaintSearch.value
+                .trim()
+                .toLowerCase();
+
+        renderComplaints();
+
+    }
+);
+
+
+/* =========================
+   FILTER
+========================= */
+
+complaintStatusFilter.addEventListener(
+    "change",
+    () => {
+
+        selectedStatus =
+            complaintStatusFilter.value;
+
+        renderComplaints();
+
+    }
+);
 
 
 /* =========================
    AUTH CHECK
 ========================= */
 
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(
+    auth,
+    async (user) => {
 
-    if (!user) {
+        if (!user) {
 
-        window.location.href = "login.html";
-
-        return;
-
-    }
-
-    currentAdmin = user;
-
-
-    try {
-
-        const userSnapshot = await getDoc(
-            doc(db, "users", user.uid)
-        );
-
-
-        if (!userSnapshot.exists()) {
-
-            window.location.href = "dashboard.html";
+            window.location.href =
+                "login.html";
 
             return;
 
         }
 
 
-        const userData = userSnapshot.data();
+        currentAdmin = user;
 
 
-        if (userData.role !== "admin") {
+        try {
 
-            alert("Access denied. Admin account required.");
+            const userSnapshot =
+                await getDoc(
+                    doc(
+                        db,
+                        "users",
+                        user.uid
+                    )
+                );
 
-            window.location.href = "dashboard.html";
 
-            return;
+            if (
+                !userSnapshot.exists()
+            ) {
+
+                window.location.href =
+                    "dashboard.html";
+
+                return;
+
+            }
+
+
+            const userData =
+                userSnapshot.data();
+
+
+            if (
+                userData.role !==
+                "admin"
+            ) {
+
+                alert(
+                    "Access denied. Admin account required."
+                );
+
+                window.location.href =
+                    "dashboard.html";
+
+                return;
+
+            }
+
+
+            await loadAllComplaints();
+
+        } catch (error) {
+
+            console.error(
+                "Admin verification error:",
+                error
+            );
+
+            window.location.href =
+                "dashboard.html";
 
         }
 
-
-        await loadAllComplaints();
-
-
-    } catch (error) {
-
-        console.error("Admin verification error:", error);
-
-        window.location.href = "dashboard.html";
-
     }
-
-});
+);
 
 
 /* =========================
@@ -99,14 +231,15 @@ adminLogoutBtn.addEventListener(
 
         await signOut(auth);
 
-        window.location.href = "login.html";
+        window.location.href =
+            "login.html";
 
     }
 );
 
 
 /* =========================
-   LOAD ALL COMPLAINTS
+   LOAD COMPLAINTS
 ========================= */
 
 async function loadAllComplaints() {
@@ -119,99 +252,57 @@ async function loadAllComplaints() {
             </p>`;
 
 
-        const complaintsQuery = query(
+        const complaintsQuery =
+            query(
+                collection(
+                    db,
+                    "complaints"
+                ),
 
-            collection(db, "complaints"),
-
-            orderBy("createdAt", "desc")
-
-        );
+                orderBy(
+                    "createdAt",
+                    "desc"
+                )
+            );
 
 
         const snapshot =
-            await getDocs(complaintsQuery);
+            await getDocs(
+                complaintsQuery
+            );
 
 
-        let total = 0;
-        let pending = 0;
-        let progress = 0;
-        let resolved = 0;
+        allComplaints = [];
 
 
-        adminComplaintsList.innerHTML = "";
+        snapshot.forEach(
+            (documentSnapshot) => {
 
+                allComplaints.push({
 
-        if (snapshot.empty) {
+                    id:
+                        documentSnapshot.id,
 
-            adminComplaintsList.innerHTML = `
-                <p class="empty-message">
-                    No complaints have been submitted yet.
-                </p>
-            `;
+                    data:
+                        documentSnapshot.data()
 
-        }
-
-
-        snapshot.forEach((documentSnapshot) => {
-
-            const complaint =
-                documentSnapshot.data();
-
-
-            total++;
-
-
-            if (complaint.status === "Pending") {
-
-                pending++;
+                });
 
             }
-
-            else if (complaint.status === "In Progress") {
-
-                progress++;
-
-            }
-
-            else if (complaint.status === "Resolved") {
-
-                resolved++;
-
-            }
+        );
 
 
-            const card =
-                createAdminComplaintCard(
-                    documentSnapshot.id,
-                    complaint
-                );
+        updateStatistics();
 
-
-            adminComplaintsList.appendChild(card);
-
-        });
-
-
-        document.getElementById("adminTotal")
-            .textContent = total;
-
-        document.getElementById("adminPending")
-            .textContent = pending;
-
-        document.getElementById("adminProgress")
-            .textContent = progress;
-
-        document.getElementById("adminResolved")
-            .textContent = resolved;
+        renderComplaints();
 
 
     } catch (error) {
 
         console.error(
-            "Error loading admin complaints:",
+            "Error loading complaints:",
             error
         );
-
 
         adminComplaintsList.innerHTML = `
             <p class="empty-message">
@@ -225,17 +316,180 @@ async function loadAllComplaints() {
 
 
 /* =========================
-   CREATE ADMIN CARD
+   STATISTICS
 ========================= */
 
-function createAdminComplaintCard(id, complaint) {
+function updateStatistics() {
+
+    let pending = 0;
+
+    let progress = 0;
+
+    let resolved = 0;
+
+
+    allComplaints.forEach(
+        (item) => {
+
+            if (
+                item.data.status ===
+                "Pending"
+            ) {
+
+                pending++;
+
+            }
+
+            else if (
+                item.data.status ===
+                "In Progress"
+            ) {
+
+                progress++;
+
+            }
+
+            else if (
+                item.data.status ===
+                "Resolved"
+            ) {
+
+                resolved++;
+
+            }
+
+        }
+    );
+
+
+    document.getElementById(
+        "adminTotal"
+    ).textContent =
+        allComplaints.length;
+
+
+    document.getElementById(
+        "adminPending"
+    ).textContent =
+        pending;
+
+
+    document.getElementById(
+        "adminProgress"
+    ).textContent =
+        progress;
+
+
+    document.getElementById(
+        "adminResolved"
+    ).textContent =
+        resolved;
+
+}
+
+
+/* =========================
+   FILTER COMPLAINTS
+========================= */
+
+function renderComplaints() {
+
+    const filtered =
+        allComplaints.filter(
+            (item) => {
+
+                const complaint =
+                    item.data;
+
+
+                const searchableText = `
+
+                    ${complaint.title || ""}
+
+                    ${complaint.category || ""}
+
+                    ${complaint.userEmail || ""}
+
+                    ${complaint.priority || ""}
+
+                    ${complaint.description || ""}
+
+                `.toLowerCase();
+
+
+                const matchesSearch =
+                    searchableText.includes(
+                        searchTerm
+                    );
+
+
+                const matchesStatus =
+                    selectedStatus ===
+                    "All"
+                    ||
+                    complaint.status ===
+                    selectedStatus;
+
+
+                return (
+                    matchesSearch &&
+                    matchesStatus
+                );
+
+            }
+        );
+
+
+    adminComplaintsList.innerHTML =
+        "";
+
+
+    if (filtered.length === 0) {
+
+        adminComplaintsList.innerHTML = `
+            <p class="empty-message">
+                No complaints match your search.
+            </p>
+        `;
+
+        return;
+
+    }
+
+
+    filtered.forEach(
+        (item) => {
+
+            adminComplaintsList.appendChild(
+
+                createAdminComplaintCard(
+                    item.id,
+                    item.data
+                )
+
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   ADMIN COMPLAINT CARD
+========================= */
+
+function createAdminComplaintCard(
+    complaintId,
+    complaint
+) {
 
     const card =
         document.createElement("div");
 
 
     card.className =
-        "complaint-card admin-complaint-card";
+        "complaint-card";
 
 
     let dateText = "Recently";
@@ -258,7 +512,9 @@ function createAdminComplaintCard(id, complaint) {
             <div>
 
                 <h3>
-                    ${escapeHtml(complaint.title)}
+                    ${escapeHtml(
+                        complaint.title
+                    )}
                 </h3>
 
                 <span class="complaint-date">
@@ -267,8 +523,16 @@ function createAdminComplaintCard(id, complaint) {
 
             </div>
 
-            <span class="status-badge ${getStatusClass(complaint.status)}">
-                ${escapeHtml(complaint.status)}
+
+            <span
+                class="status-badge
+                ${getStatusClass(
+                    complaint.status
+                )}"
+            >
+                ${escapeHtml(
+                    complaint.status
+                )}
             </span>
 
         </div>
@@ -279,21 +543,27 @@ function createAdminComplaintCard(id, complaint) {
             <span>
                 Category:
                 <strong>
-                    ${escapeHtml(complaint.category)}
+                    ${escapeHtml(
+                        complaint.category
+                    )}
                 </strong>
             </span>
 
             <span>
                 Priority:
                 <strong>
-                    ${escapeHtml(complaint.priority)}
+                    ${escapeHtml(
+                        complaint.priority
+                    )}
                 </strong>
             </span>
 
             <span>
                 User:
                 <strong>
-                    ${escapeHtml(complaint.userEmail)}
+                    ${escapeHtml(
+                        complaint.userEmail
+                    )}
                 </strong>
             </span>
 
@@ -302,41 +572,76 @@ function createAdminComplaintCard(id, complaint) {
 
         <p class="complaint-description">
 
-            ${escapeHtml(complaint.description)}
+            ${escapeHtml(
+                complaint.description
+            )}
 
         </p>
 
 
-        <div class="admin-actions">
+        <div class="admin-update-box">
 
-            <label>
-                Update Status
-            </label>
+            <div class="admin-field">
 
-            <select class="status-select">
+                <label>
+                    Complaint Status
+                </label>
 
-                <option value="Pending"
-                    ${complaint.status === "Pending" ? "selected" : ""}>
-                    Pending
-                </option>
+                <select
+                    class="status-select"
+                >
 
-                <option value="In Progress"
-                    ${complaint.status === "In Progress" ? "selected" : ""}>
-                    In Progress
-                </option>
+                    <option
+                        value="Pending"
+                        ${complaint.status === "Pending"
+                            ? "selected"
+                            : ""}
+                    >
+                        Pending
+                    </option>
 
-                <option value="Resolved"
-                    ${complaint.status === "Resolved" ? "selected" : ""}>
-                    Resolved
-                </option>
+                    <option
+                        value="In Progress"
+                        ${complaint.status === "In Progress"
+                            ? "selected"
+                            : ""}
+                    >
+                        In Progress
+                    </option>
 
-            </select>
+                    <option
+                        value="Resolved"
+                        ${complaint.status === "Resolved"
+                            ? "selected"
+                            : ""}
+                    >
+                        Resolved
+                    </option>
+
+                </select>
+
+            </div>
 
 
-            <button class="btn btn-primary update-status-btn">
+            <div class="admin-field">
 
-                Update
+                <label>
+                    Admin Remark
+                </label>
 
+                <input
+                    type="text"
+                    class="remark-input"
+                    placeholder="Enter an update or resolution note..."
+                >
+
+            </div>
+
+
+            <button
+                class="btn btn-primary update-complaint-btn"
+            >
+                Update Complaint
             </button>
 
         </div>
@@ -345,21 +650,35 @@ function createAdminComplaintCard(id, complaint) {
 
 
     const statusSelect =
-        card.querySelector(".status-select");
+        card.querySelector(
+            ".status-select"
+        );
+
+
+    const remarkInput =
+        card.querySelector(
+            ".remark-input"
+        );
 
 
     const updateButton =
-        card.querySelector(".update-status-btn");
+        card.querySelector(
+            ".update-complaint-btn"
+        );
 
 
     updateButton.addEventListener(
         "click",
         async () => {
 
-            await updateComplaintStatus(
-                id,
+            await updateComplaint(
+                complaintId,
+
                 complaint.status,
-                statusSelect.value
+
+                statusSelect.value,
+
+                remarkInput.value.trim()
             );
 
         }
@@ -372,16 +691,24 @@ function createAdminComplaintCard(id, complaint) {
 
 
 /* =========================
-   UPDATE STATUS
+   UPDATE COMPLAINT
 ========================= */
 
-async function updateComplaintStatus(
+async function updateComplaint(
     complaintId,
     oldStatus,
-    newStatus
+    newStatus,
+    remark
 ) {
 
-    if (oldStatus === newStatus) {
+    if (
+        oldStatus === newStatus &&
+        !remark
+    ) {
+
+        alert(
+            "Change the status or enter an admin remark."
+        );
 
         return;
 
@@ -391,27 +718,55 @@ async function updateComplaintStatus(
     try {
 
         await updateDoc(
-            doc(db, "complaints", complaintId),
+            doc(
+                db,
+                "complaints",
+                complaintId
+            ),
+
             {
                 status: newStatus
             }
         );
 
 
+        let updateMessage;
+
+
+        if (remark) {
+
+            updateMessage =
+                remark;
+
+        } else {
+
+            updateMessage =
+                `Complaint status changed from ${oldStatus} to ${newStatus}.`;
+
+        }
+
+
         await addDoc(
-            collection(db, "complaint_updates"),
+            collection(
+                db,
+                "complaint_updates"
+            ),
+
             {
 
-                complaintId: complaintId,
+                complaintId,
 
-                status: newStatus,
+                status:
+                    newStatus,
 
                 message:
-                    `Complaint status changed from ${oldStatus} to ${newStatus}.`,
+                    updateMessage,
 
-                updatedBy: currentAdmin.uid,
+                updatedBy:
+                    currentAdmin.uid,
 
-                createdAt: serverTimestamp()
+                createdAt:
+                    serverTimestamp()
 
             }
         );
@@ -423,12 +778,12 @@ async function updateComplaintStatus(
     } catch (error) {
 
         console.error(
-            "Status update error:",
+            "Complaint update error:",
             error
         );
 
         alert(
-            "Unable to update complaint status."
+            "Unable to update complaint."
         );
 
     }
@@ -442,21 +797,27 @@ async function updateComplaintStatus(
 
 function getStatusClass(status) {
 
-    if (status === "Pending") {
+    if (
+        status === "Pending"
+    ) {
 
         return "status-pending";
 
     }
 
 
-    if (status === "In Progress") {
+    if (
+        status === "In Progress"
+    ) {
 
         return "status-progress";
 
     }
 
 
-    if (status === "Resolved") {
+    if (
+        status === "Resolved"
+    ) {
 
         return "status-resolved";
 
@@ -476,14 +837,29 @@ function escapeHtml(value) {
 
     return String(value)
 
-        .replaceAll("&", "&amp;")
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
 
-        .replaceAll("<", "&lt;")
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
 
-        .replaceAll(">", "&gt;")
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
 
-        .replaceAll('"', "&quot;")
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
 
-        .replaceAll("'", "&#039;");
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
 
 }

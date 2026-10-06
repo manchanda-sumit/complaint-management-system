@@ -1,25 +1,22 @@
 import { auth, db } from "./firebase.js";
 
 import {
-  onAuthStateChanged,
-  signOut,
+    onAuthStateChanged,
+    signOut
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
 import {
-  collection,
-  addDoc,
-  query,
-  where,
-  orderBy,
-  getDocs,
-  doc,
-  getDoc,
-  serverTimestamp,
+    collection,
+    addDoc,
+    query,
+    where,
+    orderBy,
+    getDocs,
+    doc,
+    getDoc,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-/* =========================
-   ELEMENTS
-========================= */
 
 const welcomeUser = document.getElementById("welcomeUser");
 const logoutBtn = document.getElementById("logoutBtn");
@@ -29,242 +26,418 @@ const complaintMessage = document.getElementById("complaintMessage");
 
 const complaintsList = document.getElementById("complaintsList");
 
-const totalComplaints = document.getElementById("totalComplaints");
-const pendingComplaints = document.getElementById("pendingComplaints");
-const progressComplaints = document.getElementById("progressComplaints");
-const resolvedComplaints = document.getElementById("resolvedComplaints");
+const totalComplaints =
+    document.getElementById("totalComplaints");
+
+const pendingComplaints =
+    document.getElementById("pendingComplaints");
+
+const progressComplaints =
+    document.getElementById("progressComplaints");
+
+const resolvedComplaints =
+    document.getElementById("resolvedComplaints");
+
+const dashboardTitle =
+    document.getElementById("dashboardTitle");
+
 
 let currentUser = null;
 
+
 /* =========================
-   AUTHENTICATION CHECK
+   AUTHENTICATION
 ========================= */
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
 
-    return;
-  }
+    if (!user) {
 
-  currentUser = user;
+        window.location.href = "login.html";
 
-  await loadUser();
+        return;
+    }
 
-  await loadComplaints();
+    currentUser = user;
+
+    await loadUser();
+
+    await loadComplaints();
+
 });
+
 
 /* =========================
    LOAD USER
 ========================= */
 
 async function loadUser() {
-  try {
-    const userRef = doc(db, "users", currentUser.uid);
 
-    const userSnapshot = await getDoc(userRef);
+    try {
 
-    if (userSnapshot.exists()) {
-      const userData = userSnapshot.data();
+        const userSnapshot =
+            await getDoc(
+                doc(db, "users", currentUser.uid)
+            );
 
-      welcomeUser.textContent = `Welcome, ${userData.name}`;
 
-      document.getElementById("dashboardTitle").textContent =
-        `${userData.name}'s Dashboard`;
-    } else {
-      welcomeUser.textContent = `Welcome, ${currentUser.email}`;
+        if (userSnapshot.exists()) {
+
+            const userData =
+                userSnapshot.data();
+
+            const name =
+                userData.name || currentUser.email;
+
+
+            welcomeUser.textContent =
+                `Welcome, ${name}`;
+
+
+            if (dashboardTitle) {
+
+                dashboardTitle.textContent =
+                    `${name}'s Dashboard`;
+
+            }
+
+        } else {
+
+            welcomeUser.textContent =
+                `Welcome, ${currentUser.email}`;
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error loading user:",
+            error
+        );
+
     }
-  } catch (error) {
-    console.error("Error loading user:", error);
 
-    welcomeUser.textContent = `Welcome, ${currentUser.email}`;
-  }
 }
+
 
 /* =========================
    LOGOUT
 ========================= */
 
-logoutBtn.addEventListener("click", async () => {
-  try {
-    await signOut(auth);
+logoutBtn.addEventListener(
+    "click",
+    async () => {
 
-    window.location.href = "login.html";
-  } catch (error) {
-    console.error("Logout error:", error);
-  }
-});
+        await signOut(auth);
+
+        window.location.href =
+            "login.html";
+
+    }
+);
+
 
 /* =========================
    SUBMIT COMPLAINT
 ========================= */
 
-complaintForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
+complaintForm.addEventListener(
+    "submit",
+    async (event) => {
 
-  if (!currentUser) {
-    complaintMessage.textContent = "Please login again.";
+        event.preventDefault();
 
-    return;
-  }
 
-  const title = document.getElementById("complaintTitle").value.trim();
+        const title =
+            document
+                .getElementById("complaintTitle")
+                .value
+                .trim();
 
-  const category = document.getElementById("category").value;
+        const category =
+            document
+                .getElementById("category")
+                .value;
 
-  const priority = document.getElementById("priority").value;
+        const priority =
+            document
+                .getElementById("priority")
+                .value;
 
-  const description = document.getElementById("description").value.trim();
+        const description =
+            document
+                .getElementById("description")
+                .value
+                .trim();
 
-  try {
-    complaintMessage.textContent = "Submitting complaint...";
 
-    const complaintData = {
-      title: title,
+        try {
 
-      category: category,
+            complaintMessage.textContent =
+                "Submitting complaint...";
 
-      priority: priority,
 
-      description: description,
+            const complaintRef =
+                await addDoc(
+                    collection(db, "complaints"),
+                    {
 
-      status: "Pending",
+                        title,
 
-      userId: currentUser.uid,
+                        category,
 
-      userEmail: currentUser.email,
+                        priority,
 
-      assignedTo: "",
+                        description,
 
-      createdAt: serverTimestamp(),
-    };
+                        status: "Pending",
 
-    const complaintRef = await addDoc(
-      collection(db, "complaints"),
-      complaintData,
-    );
+                        userId:
+                            currentUser.uid,
 
-    // Add first entry to complaint history
+                        userEmail:
+                            currentUser.email,
 
-    await addDoc(collection(db, "complaint_updates"), {
-      complaintId: complaintRef.id,
+                        assignedTo: "",
 
-      status: "Pending",
+                        createdAt:
+                            serverTimestamp()
 
-      message: "Complaint submitted successfully.",
+                    }
+                );
 
-      updatedBy: currentUser.uid,
 
-      createdAt: serverTimestamp(),
-    });
+            await addDoc(
+                collection(
+                    db,
+                    "complaint_updates"
+                ),
+                {
 
-    complaintMessage.textContent = "Complaint submitted successfully!";
+                    complaintId:
+                        complaintRef.id,
 
-    complaintForm.reset();
+                    status:
+                        "Pending",
 
-    await loadComplaints();
-  } catch (error) {
-    console.error("Complaint submission error:", error);
+                    message:
+                        "Complaint submitted successfully.",
 
-    complaintMessage.textContent =
-      "Unable to submit complaint. Please try again.";
-  }
-});
+                    updatedBy:
+                        currentUser.uid,
+
+                    createdAt:
+                        serverTimestamp()
+
+                }
+            );
+
+
+            complaintMessage.textContent =
+                "Complaint submitted successfully!";
+
+
+            complaintForm.reset();
+
+            await loadComplaints();
+
+
+        } catch (error) {
+
+            console.error(
+                "Complaint submission error:",
+                error
+            );
+
+            complaintMessage.textContent =
+                "Unable to submit complaint. Please try again.";
+
+        }
+
+    }
+);
+
 
 /* =========================
    LOAD COMPLAINTS
 ========================= */
 
 async function loadComplaints() {
-  try {
-    complaintsList.innerHTML = `<p class="empty-message">Loading complaints...</p>`;
 
-    const complaintsQuery = query(
-      collection(db, "complaints"),
+    try {
 
-      where("userId", "==", currentUser.uid),
+        complaintsList.innerHTML =
+            `<p class="empty-message">
+                Loading complaints...
+            </p>`;
 
-      orderBy("createdAt", "desc"),
-    );
 
-    const snapshot = await getDocs(complaintsQuery);
+        const complaintsQuery =
+            query(
+                collection(
+                    db,
+                    "complaints"
+                ),
 
-    let total = 0;
-    let pending = 0;
-    let inProgress = 0;
-    let resolved = 0;
+                where(
+                    "userId",
+                    "==",
+                    currentUser.uid
+                ),
 
-    complaintsList.innerHTML = "";
+                orderBy(
+                    "createdAt",
+                    "desc"
+                )
+            );
 
-    if (snapshot.empty) {
-      complaintsList.innerHTML = `
+
+        const snapshot =
+            await getDocs(
+                complaintsQuery
+            );
+
+
+        let total = 0;
+        let pending = 0;
+        let inProgress = 0;
+        let resolved = 0;
+
+
+        complaintsList.innerHTML = "";
+
+
+        if (snapshot.empty) {
+
+            complaintsList.innerHTML = `
                 <p class="empty-message">
                     You haven't submitted any complaints yet.
                 </p>
             `;
-    }
 
-    snapshot.forEach((documentSnapshot) => {
-      const complaint = documentSnapshot.data();
+        }
 
-      total++;
 
-      if (complaint.status === "Pending") {
-        pending++;
-      } else if (complaint.status === "In Progress") {
-        inProgress++;
-      } else if (complaint.status === "Resolved") {
-        resolved++;
-      }
+        snapshot.forEach(
+            (documentSnapshot) => {
 
-      const complaintCard = createComplaintCard(documentSnapshot.id, complaint);
+                const complaint =
+                    documentSnapshot.data();
 
-      complaintsList.appendChild(complaintCard);
-    });
 
-    totalComplaints.textContent = total;
+                total++;
 
-    pendingComplaints.textContent = pending;
 
-    progressComplaints.textContent = inProgress;
+                if (
+                    complaint.status ===
+                    "Pending"
+                ) {
 
-    resolvedComplaints.textContent = resolved;
-  } catch (error) {
-    console.error("Error loading complaints:", error);
+                    pending++;
 
-    complaintsList.innerHTML = `
+                }
+
+                else if (
+                    complaint.status ===
+                    "In Progress"
+                ) {
+
+                    inProgress++;
+
+                }
+
+                else if (
+                    complaint.status ===
+                    "Resolved"
+                ) {
+
+                    resolved++;
+
+                }
+
+
+                complaintsList.appendChild(
+                    createComplaintCard(
+                        documentSnapshot.id,
+                        complaint
+                    )
+                );
+
+            }
+        );
+
+
+        totalComplaints.textContent =
+            total;
+
+        pendingComplaints.textContent =
+            pending;
+
+        progressComplaints.textContent =
+            inProgress;
+
+        resolvedComplaints.textContent =
+            resolved;
+
+
+    } catch (error) {
+
+        console.error(
+            "Error loading complaints:",
+            error
+        );
+
+        complaintsList.innerHTML = `
             <p class="empty-message">
                 Unable to load complaints.
             </p>
         `;
-  }
+
+    }
+
 }
 
+
 /* =========================
-   CREATE COMPLAINT CARD
+   COMPLAINT CARD
 ========================= */
 
-function createComplaintCard(id, complaint) {
-  const card = document.createElement("div");
+function createComplaintCard(
+    complaintId,
+    complaint
+) {
 
-  card.className = "complaint-card";
+    const card =
+        document.createElement("div");
 
-  let dateText = "Recently";
 
-  if (complaint.createdAt) {
-    const date = complaint.createdAt.toDate();
+    card.className =
+        "complaint-card";
 
-    dateText = date.toLocaleString();
-  }
 
-  card.innerHTML = `
+    let dateText = "Recently";
+
+
+    if (complaint.createdAt) {
+
+        dateText =
+            complaint.createdAt
+                .toDate()
+                .toLocaleString();
+
+    }
+
+
+    card.innerHTML = `
 
         <div class="complaint-card-header">
 
             <div>
 
                 <h3>
-                    ${escapeHtml(complaint.title)}
+                    ${escapeHtml(
+                        complaint.title
+                    )}
                 </h3>
 
                 <span class="complaint-date">
@@ -273,8 +446,16 @@ function createComplaintCard(id, complaint) {
 
             </div>
 
-            <span class="status-badge ${getStatusClass(complaint.status)}">
-                ${escapeHtml(complaint.status)}
+
+            <span
+                class="status-badge
+                ${getStatusClass(
+                    complaint.status
+                )}"
+            >
+                ${escapeHtml(
+                    complaint.status
+                )}
             </span>
 
         </div>
@@ -285,14 +466,18 @@ function createComplaintCard(id, complaint) {
             <span>
                 Category:
                 <strong>
-                    ${escapeHtml(complaint.category)}
+                    ${escapeHtml(
+                        complaint.category
+                    )}
                 </strong>
             </span>
 
             <span>
                 Priority:
                 <strong>
-                    ${escapeHtml(complaint.priority)}
+                    ${escapeHtml(
+                        complaint.priority
+                    )}
                 </strong>
             </span>
 
@@ -300,47 +485,303 @@ function createComplaintCard(id, complaint) {
 
 
         <p class="complaint-description">
-            ${escapeHtml(complaint.description)}
+
+            ${escapeHtml(
+                complaint.description
+            )}
+
         </p>
+
+
+        <button
+            class="history-button"
+        >
+            View Complaint History
+        </button>
+
+
+        <div class="history-panel"></div>
 
     `;
 
-  return card;
+
+    const historyButton =
+        card.querySelector(
+            ".history-button"
+        );
+
+
+    const historyPanel =
+        card.querySelector(
+            ".history-panel"
+        );
+
+
+    historyButton.addEventListener(
+        "click",
+        async () => {
+
+            if (
+                historyPanel.classList.contains(
+                    "history-open"
+                )
+            ) {
+
+                historyPanel.classList.remove(
+                    "history-open"
+                );
+
+                historyPanel.innerHTML = "";
+
+                historyButton.textContent =
+                    "View Complaint History";
+
+                return;
+
+            }
+
+
+            historyButton.textContent =
+                "Loading history...";
+
+
+            await loadComplaintHistory(
+                complaintId,
+                historyPanel
+            );
+
+
+            historyPanel.classList.add(
+                "history-open"
+            );
+
+
+            historyButton.textContent =
+                "Hide Complaint History";
+
+        }
+    );
+
+
+    return card;
+
 }
 
+
 /* =========================
-   STATUS CLASS
+   LOAD COMPLAINT HISTORY
+========================= */
+
+async function loadComplaintHistory(
+    complaintId,
+    container
+) {
+
+    try {
+
+        const historyQuery =
+            query(
+                collection(
+                    db,
+                    "complaint_updates"
+                ),
+
+                where(
+                    "complaintId",
+                    "==",
+                    complaintId
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(
+                historyQuery
+            );
+
+
+        const updates = [];
+
+
+        snapshot.forEach(
+            (documentSnapshot) => {
+
+                updates.push(
+                    documentSnapshot.data()
+                );
+
+            }
+        );
+
+
+        updates.sort(
+            (a, b) => {
+
+                const timeA =
+                    a.createdAt
+                        ? a.createdAt.toMillis()
+                        : 0;
+
+                const timeB =
+                    b.createdAt
+                        ? b.createdAt.toMillis()
+                        : 0;
+
+                return timeA - timeB;
+
+            }
+        );
+
+
+        if (updates.length === 0) {
+
+            container.innerHTML = `
+                <p class="empty-message">
+                    No history available.
+                </p>
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML = `
+
+            <div class="history-title">
+                Complaint History
+            </div>
+
+            <div class="history-timeline">
+
+                ${updates.map(
+                    (update) => {
+
+                        let dateText =
+                            "Recently";
+
+
+                        if (
+                            update.createdAt
+                        ) {
+
+                            dateText =
+                                update.createdAt
+                                    .toDate()
+                                    .toLocaleString();
+
+                        }
+
+
+                        return `
+
+                            <div
+                                class="history-item"
+                            >
+
+                                <div
+                                    class="history-dot"
+                                ></div>
+
+
+                                <div
+                                    class="history-content"
+                                >
+
+                                    <strong>
+                                        ${escapeHtml(
+                                            update.status
+                                        )}
+                                    </strong>
+
+                                    <p>
+                                        ${escapeHtml(
+                                            update.message ||
+                                            ""
+                                        )}
+                                    </p>
+
+                                    <small>
+                                        ${dateText}
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                ).join("")}
+
+            </div>
+
+        `;
+
+
+    } catch (error) {
+
+        console.error(
+            "History error:",
+            error
+        );
+
+        container.innerHTML = `
+            <p class="empty-message">
+                Unable to load complaint history.
+            </p>
+        `;
+
+    }
+
+}
+
+
+/* =========================
+   STATUS
 ========================= */
 
 function getStatusClass(status) {
-  if (status === "Pending") {
-    return "status-pending";
-  }
 
-  if (status === "In Progress") {
-    return "status-progress";
-  }
+    if (status === "Pending") {
 
-  if (status === "Resolved") {
-    return "status-resolved";
-  }
+        return "status-pending";
 
-  return "";
+    }
+
+    if (status === "In Progress") {
+
+        return "status-progress";
+
+    }
+
+    if (status === "Resolved") {
+
+        return "status-resolved";
+
+    }
+
+    return "";
+
 }
+
 
 /* =========================
    HTML SAFETY
 ========================= */
 
 function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
 
-    .replaceAll("<", "&lt;")
+    return String(value)
 
-    .replaceAll(">", "&gt;")
+        .replaceAll("&", "&amp;")
 
-    .replaceAll('"', "&quot;")
+        .replaceAll("<", "&lt;")
 
-    .replaceAll("'", "&#039;");
+        .replaceAll(">", "&gt;")
+
+        .replaceAll('"', "&quot;")
+
+        .replaceAll("'", "&#039;");
+
 }
