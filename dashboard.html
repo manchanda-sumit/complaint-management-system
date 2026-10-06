@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - Complainify</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <div class="logo">
+        <span>Complainify</span>
+    </div>
+
+    <div class="nav-buttons">
+        <span id="welcomeUser" class="welcome-user"></span>
+
+        <button id="logoutBtn" class="btn btn-outline">
+            Logout
+        </button>
+    </div>
+
+</header>
+
+
+<main class="dashboard-container">
+
+    <!-- HEADER -->
+
+    <section class="dashboard-header">
+
+        <div>
+            <div class="badge">User Dashboard</div>
+
+            <h1>Complaint Dashboard</h1>
+
+            <p>
+                Submit complaints, track their progress and view their current status.
+            </p>
+        </div>
+
+    </section>
+
+
+    <!-- STAT CARDS -->
+
+    <section class="dashboard-stats">
+
+        <div class="stat-card">
+            <span class="stat-label">Total Complaints</span>
+            <strong id="totalComplaints">0</strong>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">Pending</span>
+            <strong id="pendingComplaints">0</strong>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">In Progress</span>
+            <strong id="progressComplaints">0</strong>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">Resolved</span>
+            <strong id="resolvedComplaints">0</strong>
+        </div>
+
+    </section>
+
+
+    <!-- SUBMIT COMPLAINT -->
+
+    <section class="dashboard-section">
+
+        <div class="section-card">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Submit a Complaint</h2>
+
+                    <p>
+                        Describe your issue and submit it for review.
+                    </p>
+                </div>
+            </div>
+
+
+            <form id="complaintForm">
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="complaintTitle">
+                            Complaint Title
+                        </label>
+
+                        <input
+                            type="text"
+                            id="complaintTitle"
+                            placeholder="Enter complaint title"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="category">
+                            Category
+                        </label>
+
+                        <select id="category" required>
+
+                            <option value="">
+                                Select category
+                            </option>
+
+                            <option value="Academic">
+                                Academic
+                            </option>
+
+                            <option value="Infrastructure">
+                                Infrastructure
+                            </option>
+
+                            <option value="IT / Technical">
+                                IT / Technical
+                            </option>
+
+                            <option value="Administration">
+                                Administration
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="priority">
+                            Priority
+                        </label>
+
+                        <select id="priority" required>
+
+                            <option value="">
+                                Select priority
+                            </option>
+
+                            <option value="Low">
+                                Low
+                            </option>
+
+                            <option value="Medium">
+                                Medium
+                            </option>
+
+                            <option value="High">
+                                High
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="description">
+                        Complaint Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        rows="6"
+                        placeholder="Describe your complaint in detail..."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary complaint-submit-btn"
+                >
+                    Submit Complaint
+                </button>
+
+            </form>
+
+
+            <p id="complaintMessage" class="message"></p>
+
+        </div>
+
+    </section>
+
+
+    <!-- MY COMPLAINTS -->
+
+    <section class="dashboard-section">
+
+        <div class="section-card">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>My Complaints</h2>
+
+                    <p>
+                        View the complaints you have submitted.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div id="complaintsList" class="complaints-list">
+
+                <p class="empty-message">
+                    Loading complaints...
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script type="module" src="js/dashboard.js"></script>
+
+</body>
+</html>
