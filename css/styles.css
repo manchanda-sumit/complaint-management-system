@@ -567,3 +567,44 @@ footer {
     }
 
 }
+
+/* =========================
+   ADMIN DASHBOARD
+========================= */
+
+.admin-complaint-card {
+    position: relative;
+}
+
+.admin-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-actions label {
+    color: #a9afc3;
+    font-size: 14px;
+}
+
+.status-select {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: #131a30;
+    color: white;
+    outline: none;
+}
+
+.status-select:focus {
+    border-color: #7c6cff;
+}
+
+.update-status-btn {
+    border: none;
+    cursor: pointer;
+    padding: 10px 18px;
+}
