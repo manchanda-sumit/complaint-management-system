@@ -1,22 +1,21 @@
 import { auth, db } from "./firebase.js";
 
 import {
-    onAuthStateChanged,
-    signOut
+  onAuthStateChanged,
+  signOut,
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
 import {
-    collection,
-    addDoc,
-    query,
-    where,
-    orderBy,
-    getDocs,
-    doc,
-    getDoc,
-    serverTimestamp
+  collection,
+  addDoc,
+  query,
+  where,
+  orderBy,
+  getDocs,
+  doc,
+  getDoc,
+  serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-
 
 /* =========================
    ELEMENTS
@@ -35,338 +34,230 @@ const pendingComplaints = document.getElementById("pendingComplaints");
 const progressComplaints = document.getElementById("progressComplaints");
 const resolvedComplaints = document.getElementById("resolvedComplaints");
 
-
 let currentUser = null;
-
 
 /* =========================
    AUTHENTICATION CHECK
 ========================= */
 
 onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "login.html";
 
-    if (!user) {
+    return;
+  }
 
-        window.location.href = "login.html";
+  currentUser = user;
 
-        return;
-    }
+  await loadUser();
 
-    currentUser = user;
-
-    await loadUser();
-
-    await loadComplaints();
-
+  await loadComplaints();
 });
-
 
 /* =========================
    LOAD USER
 ========================= */
 
 async function loadUser() {
+  try {
+    const userRef = doc(db, "users", currentUser.uid);
 
-    try {
+    const userSnapshot = await getDoc(userRef);
 
-        const userRef = doc(db, "users", currentUser.uid);
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data();
 
-        const userSnapshot = await getDoc(userRef);
+      welcomeUser.textContent = `Welcome, ${userData.name}`;
 
-        if (userSnapshot.exists()) {
-
-            const userData = userSnapshot.data();
-
-            welcomeUser.textContent =
-                `Welcome, ${userData.name}`;
-
-        } else {
-
-            welcomeUser.textContent =
-                `Welcome, ${currentUser.email}`;
-
-        }
-
-    } catch (error) {
-
-        console.error("Error loading user:", error);
-
-        welcomeUser.textContent =
-            `Welcome, ${currentUser.email}`;
-
+      document.getElementById("dashboardTitle").textContent =
+        `${userData.name}'s Dashboard`;
+    } else {
+      welcomeUser.textContent = `Welcome, ${currentUser.email}`;
     }
+  } catch (error) {
+    console.error("Error loading user:", error);
 
+    welcomeUser.textContent = `Welcome, ${currentUser.email}`;
+  }
 }
-
 
 /* =========================
    LOGOUT
 ========================= */
 
 logoutBtn.addEventListener("click", async () => {
+  try {
+    await signOut(auth);
 
-    try {
-
-        await signOut(auth);
-
-        window.location.href = "login.html";
-
-    } catch (error) {
-
-        console.error("Logout error:", error);
-
-    }
-
+    window.location.href = "login.html";
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
 });
-
 
 /* =========================
    SUBMIT COMPLAINT
 ========================= */
 
 complaintForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-    event.preventDefault();
+  if (!currentUser) {
+    complaintMessage.textContent = "Please login again.";
 
+    return;
+  }
 
-    if (!currentUser) {
+  const title = document.getElementById("complaintTitle").value.trim();
 
-        complaintMessage.textContent =
-            "Please login again.";
+  const category = document.getElementById("category").value;
 
-        return;
+  const priority = document.getElementById("priority").value;
 
-    }
+  const description = document.getElementById("description").value.trim();
 
+  try {
+    complaintMessage.textContent = "Submitting complaint...";
 
-    const title =
-        document.getElementById("complaintTitle").value.trim();
+    const complaintData = {
+      title: title,
 
-    const category =
-        document.getElementById("category").value;
+      category: category,
 
-    const priority =
-        document.getElementById("priority").value;
+      priority: priority,
 
-    const description =
-        document.getElementById("description").value.trim();
+      description: description,
 
+      status: "Pending",
 
-    try {
+      userId: currentUser.uid,
 
-        complaintMessage.textContent =
-            "Submitting complaint...";
+      userEmail: currentUser.email,
 
+      assignedTo: "",
 
-        const complaintData = {
+      createdAt: serverTimestamp(),
+    };
 
-            title: title,
+    const complaintRef = await addDoc(
+      collection(db, "complaints"),
+      complaintData,
+    );
 
-            category: category,
+    // Add first entry to complaint history
 
-            priority: priority,
+    await addDoc(collection(db, "complaint_updates"), {
+      complaintId: complaintRef.id,
 
-            description: description,
+      status: "Pending",
 
-            status: "Pending",
+      message: "Complaint submitted successfully.",
 
-            userId: currentUser.uid,
+      updatedBy: currentUser.uid,
 
-            userEmail: currentUser.email,
+      createdAt: serverTimestamp(),
+    });
 
-            assignedTo: "",
+    complaintMessage.textContent = "Complaint submitted successfully!";
 
-            createdAt: serverTimestamp()
+    complaintForm.reset();
 
-        };
+    await loadComplaints();
+  } catch (error) {
+    console.error("Complaint submission error:", error);
 
-
-        const complaintRef = await addDoc(
-            collection(db, "complaints"),
-            complaintData
-        );
-
-
-        // Add first entry to complaint history
-
-        await addDoc(
-            collection(db, "complaint_updates"),
-            {
-
-                complaintId: complaintRef.id,
-
-                status: "Pending",
-
-                message: "Complaint submitted successfully.",
-
-                updatedBy: currentUser.uid,
-
-                createdAt: serverTimestamp()
-
-            }
-        );
-
-
-        complaintMessage.textContent =
-            "Complaint submitted successfully!";
-
-
-        complaintForm.reset();
-
-
-        await loadComplaints();
-
-
-    } catch (error) {
-
-        console.error("Complaint submission error:", error);
-
-        complaintMessage.textContent =
-            "Unable to submit complaint. Please try again.";
-
-    }
-
+    complaintMessage.textContent =
+      "Unable to submit complaint. Please try again.";
+  }
 });
-
 
 /* =========================
    LOAD COMPLAINTS
 ========================= */
 
 async function loadComplaints() {
+  try {
+    complaintsList.innerHTML = `<p class="empty-message">Loading complaints...</p>`;
 
-    try {
+    const complaintsQuery = query(
+      collection(db, "complaints"),
 
-        complaintsList.innerHTML =
-            `<p class="empty-message">Loading complaints...</p>`;
+      where("userId", "==", currentUser.uid),
 
+      orderBy("createdAt", "desc"),
+    );
 
-        const complaintsQuery = query(
+    const snapshot = await getDocs(complaintsQuery);
 
-            collection(db, "complaints"),
+    let total = 0;
+    let pending = 0;
+    let inProgress = 0;
+    let resolved = 0;
 
-            where("userId", "==", currentUser.uid),
+    complaintsList.innerHTML = "";
 
-            orderBy("createdAt", "desc")
-
-        );
-
-
-        const snapshot =
-            await getDocs(complaintsQuery);
-
-
-        let total = 0;
-        let pending = 0;
-        let inProgress = 0;
-        let resolved = 0;
-
-
-        complaintsList.innerHTML = "";
-
-
-        if (snapshot.empty) {
-
-            complaintsList.innerHTML = `
+    if (snapshot.empty) {
+      complaintsList.innerHTML = `
                 <p class="empty-message">
                     You haven't submitted any complaints yet.
                 </p>
             `;
+    }
 
-        }
+    snapshot.forEach((documentSnapshot) => {
+      const complaint = documentSnapshot.data();
 
+      total++;
 
-        snapshot.forEach((documentSnapshot) => {
+      if (complaint.status === "Pending") {
+        pending++;
+      } else if (complaint.status === "In Progress") {
+        inProgress++;
+      } else if (complaint.status === "Resolved") {
+        resolved++;
+      }
 
-            const complaint =
-                documentSnapshot.data();
+      const complaintCard = createComplaintCard(documentSnapshot.id, complaint);
 
+      complaintsList.appendChild(complaintCard);
+    });
 
-            total++;
+    totalComplaints.textContent = total;
 
+    pendingComplaints.textContent = pending;
 
-            if (complaint.status === "Pending") {
+    progressComplaints.textContent = inProgress;
 
-                pending++;
+    resolvedComplaints.textContent = resolved;
+  } catch (error) {
+    console.error("Error loading complaints:", error);
 
-            } else if (complaint.status === "In Progress") {
-
-                inProgress++;
-
-            } else if (complaint.status === "Resolved") {
-
-                resolved++;
-
-            }
-
-
-            const complaintCard =
-                createComplaintCard(
-                    documentSnapshot.id,
-                    complaint
-                );
-
-
-            complaintsList.appendChild(
-                complaintCard
-            );
-
-        });
-
-
-        totalComplaints.textContent = total;
-
-        pendingComplaints.textContent = pending;
-
-        progressComplaints.textContent = inProgress;
-
-        resolvedComplaints.textContent = resolved;
-
-
-    } catch (error) {
-
-        console.error("Error loading complaints:", error);
-
-        complaintsList.innerHTML = `
+    complaintsList.innerHTML = `
             <p class="empty-message">
                 Unable to load complaints.
             </p>
         `;
-
-    }
-
+  }
 }
-
 
 /* =========================
    CREATE COMPLAINT CARD
 ========================= */
 
 function createComplaintCard(id, complaint) {
+  const card = document.createElement("div");
 
-    const card =
-        document.createElement("div");
+  card.className = "complaint-card";
 
+  let dateText = "Recently";
 
-    card.className =
-        "complaint-card";
+  if (complaint.createdAt) {
+    const date = complaint.createdAt.toDate();
 
+    dateText = date.toLocaleString();
+  }
 
-    let dateText = "Recently";
-
-
-    if (complaint.createdAt) {
-
-        const date =
-            complaint.createdAt.toDate();
-
-        dateText =
-            date.toLocaleString();
-
-    }
-
-
-    card.innerHTML = `
+  card.innerHTML = `
 
         <div class="complaint-card-header">
 
@@ -412,63 +303,44 @@ function createComplaintCard(id, complaint) {
             ${escapeHtml(complaint.description)}
         </p>
 
-        <small>
-            Complaint ID: ${id}
-        </small>
-
     `;
 
-
-    return card;
-
+  return card;
 }
-
 
 /* =========================
    STATUS CLASS
 ========================= */
 
 function getStatusClass(status) {
+  if (status === "Pending") {
+    return "status-pending";
+  }
 
-    if (status === "Pending") {
+  if (status === "In Progress") {
+    return "status-progress";
+  }
 
-        return "status-pending";
+  if (status === "Resolved") {
+    return "status-resolved";
+  }
 
-    }
-
-    if (status === "In Progress") {
-
-        return "status-progress";
-
-    }
-
-    if (status === "Resolved") {
-
-        return "status-resolved";
-
-    }
-
-    return "";
-
+  return "";
 }
-
 
 /* =========================
    HTML SAFETY
 ========================= */
 
 function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
 
-    return String(value)
+    .replaceAll("<", "&lt;")
 
-        .replaceAll("&", "&amp;")
+    .replaceAll(">", "&gt;")
 
-        .replaceAll("<", "&lt;")
+    .replaceAll('"', "&quot;")
 
-        .replaceAll(">", "&gt;")
-
-        .replaceAll('"', "&quot;")
-
-        .replaceAll("'", "&#039;");
-
+    .replaceAll("'", "&#039;");
 }
