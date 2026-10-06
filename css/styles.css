@@ -1,0 +1,313 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0b1020;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+    height: 75px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.logo span {
+    color: #7c6cff;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+.btn {
+    display: inline-block;
+    padding: 11px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-primary {
+    background: #7c6cff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #6758e8;
+}
+
+.btn-outline {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: white;
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.btn-large {
+    padding: 14px 28px;
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    max-width: 1200px;
+    margin: auto;
+    padding: 110px 8%;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 70px;
+    align-items: center;
+}
+
+.badge {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: rgba(124, 108, 255, 0.12);
+    color: #a79eff;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.hero h1 {
+    font-size: 58px;
+    line-height: 1.05;
+    margin-bottom: 25px;
+}
+
+.hero h1 span {
+    color: #7c6cff;
+}
+
+.hero-content > p {
+    color: #a9afc3;
+    font-size: 18px;
+    line-height: 1.7;
+    max-width: 600px;
+    margin-bottom: 35px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+
+/* =========================
+   CARD
+========================= */
+
+.hero-card {
+    background: #131a30;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 35px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+}
+
+.card-icon {
+    width: 55px;
+    height: 55px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    background: #7c6cff;
+    font-size: 25px;
+    margin-bottom: 25px;
+}
+
+.hero-card h2 {
+    margin-bottom: 12px;
+}
+
+.hero-card p {
+    color: #a9afc3;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.status-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.status-item {
+    background: #0d1428;
+    padding: 14px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+}
+
+.pending {
+    background: #f5b942;
+}
+
+.progress {
+    background: #4c9aff;
+}
+
+.resolved {
+    background: #42d392;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    text-align: center;
+    padding: 30px;
+    color: #6f768d;
+    font-size: 14px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 800px) {
+
+    .hero {
+        grid-template-columns: 1fr;
+        padding-top: 70px;
+    }
+
+    .hero h1 {
+        font-size: 42px;
+    }
+
+    .navbar {
+        padding: 0 5%;
+    }
+
+}
+
+/* =========================
+   AUTHENTICATION
+========================= */
+
+.auth-container {
+    min-height: calc(100vh - 75px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 450px;
+    background: #131a30;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+}
+
+.auth-card h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.auth-subtitle {
+    color: #a9afc3;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 13px 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: #0d1428;
+    color: white;
+    font-size: 15px;
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: #7c6cff;
+}
+
+.auth-button {
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.message {
+    margin-top: 18px;
+    color: #a79eff;
+    text-align: center;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 25px;
+    color: #a9afc3;
+}
+
+.auth-footer a {
+    color: #a79eff;
+    text-decoration: none;
+}
