@@ -3,7 +3,8 @@ import { showToast } from "./toast.js";
 
 import {
     createUserWithEmailAndPassword,
-    signInWithEmailAndPassword
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
 import {
@@ -197,4 +198,63 @@ function getErrorMessage(code) {
         default:
             return `Something went wrong: ${code}`;
     }
+}
+
+
+/* =========================
+   FORGOT PASSWORD
+========================= */
+
+const forgotPasswordForm =
+    document.getElementById("forgotPasswordForm");
+
+if (forgotPasswordForm) {
+    forgotPasswordForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const email =
+            document.getElementById("resetEmail").value.trim();
+
+        const message =
+            document.getElementById("resetMessage");
+
+        const button =
+            document.getElementById("resetPasswordButton");
+
+        try {
+            button.disabled = true;
+            button.textContent = "Sending...";
+            message.textContent = "";
+
+            await sendPasswordResetEmail(auth, email);
+
+            message.textContent =
+                "If an account exists for this email, a password reset " +
+                "email will be sent. Check your inbox and spam folder.";
+
+            forgotPasswordForm.reset();
+
+        } catch (error) {
+            console.error("Password reset error:", error);
+
+            if (
+                error.code === "auth/invalid-email" ||
+                error.code === "auth/missing-email"
+            ) {
+                message.textContent =
+                    "Please enter a valid email address.";
+            } else if (
+                error.code === "auth/too-many-requests"
+            ) {
+                message.textContent =
+                    "Too many attempts. Please wait before trying again.";
+            } else {
+                message.textContent =
+                    "We couldn't process your request. Please try again later.";
+            }
+        } finally {
+            button.disabled = false;
+            button.textContent = "Send Reset Link";
+        }
+    });
 }

@@ -1,105 +1,77 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Login - Complainify</title>
 
-    <link rel="stylesheet" href="css/styles.css">
-</head>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
 
-<body>
-
-<header class="navbar">
-
-    <div class="logo">
+  <body>
+    <header class="navbar">
+      <div class="logo">
         <a href="index.html">Complainify</a>
-    </div>
+      </div>
 
-    <div class="nav-buttons">
+      <div class="nav-buttons">
         <a href="index.html" class="btn btn-outline">Home</a>
         <a href="register.html" class="btn btn-primary">Register</a>
-    </div>
+      </div>
+    </header>
 
-</header>
-
-
-<main class="auth-container">
-
-    <div class="auth-card">
-
-        <div class="badge">
-            Complaint Management System
-        </div>
+    <main class="auth-container">
+      <div class="auth-card">
+        <div class="badge">Complaint Management System</div>
 
         <h1>Welcome Back</h1>
 
-        <p class="auth-subtitle">
-            Login to manage and track your complaints.
-        </p>
-
+        <p class="auth-subtitle">Login to manage and track your complaints.</p>
 
         <form id="loginForm" autocomplete="off">
+          <div class="form-group">
+            <label for="email"> Email Address </label>
 
-            <div class="form-group">
+            <input
+              type="email"
+              id="email"
+              placeholder="Enter your email"
+              autocomplete="off"
+              required
+            />
+          </div>
 
-                <label for="email">
-                    Email Address
-                </label>
+          <div class="form-group">
+            <label for="password"> Password </label>
 
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="Enter your email"
-                    autocomplete="off"
-                    required
-                >
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter your password"
+              autocomplete="new-password"
+              required
+            />
+          </div>
 
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="password">
-                    Password
-                </label>
-
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="Enter your password"
-                    autocomplete="new-password"
-                    required
-                >
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="btn btn-primary auth-button"
-            >
-                Login
-            </button>
-
+          <button type="submit" class="btn btn-primary auth-button">
+            Login
+          </button>
         </form>
-
 
         <p id="loginMessage" class="message"></p>
 
-
         <p class="auth-footer">
-            Don't have an account?
-            <a href="register.html">Create one</a>
+          <a href="forgot-password.html">Forgot password?</a>
         </p>
 
-    </div>
+        <p class="auth-footer">
+          Don't have an account?
+          <a href="register.html">Create one</a>
+        </p>
+      </div>
+    </main>
 
-</main>
-
-
-<script type="module" src="js/auth.js"></script>
-
-</body>
+    <script type="module" src="js/auth.js"></script>
+  </body>
 </html>
