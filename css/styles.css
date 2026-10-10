@@ -915,3 +915,84 @@ footer {
 @media (prefers-reduced-motion: reduce) {
     .toast { transition: none; }
 }
+
+
+/* Complaint progress tracker */
+.complaint-progress {
+    margin: 20px 0;
+    padding: 16px;
+    background: var(--card-bg, #f8fafc);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 12px;
+}
+
+.progress-heading {
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    gap: 8px;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    text-align: center;
+    gap: 8px;
+    position: relative;
+}
+
+.progress-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+    background: white;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+    z-index: 1;
+}
+
+.progress-step.completed .progress-circle {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: white;
+}
+
+.progress-step.current .progress-circle {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: white;
+    box-shadow: 0 0 0 4px #dbeafe;
+}
+
+.progress-label {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.progress-step.completed .progress-label,
+.progress-step.current .progress-label {
+    color: var(--text-color, #1e293b);
+    font-weight: 600;
+}
+
+@media (max-width: 480px) {
+    .complaint-progress {
+        padding: 12px 8px;
+    }
+
+    .progress-label {
+        font-size: 10px;
+    }
+}
