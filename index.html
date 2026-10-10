@@ -1,99 +1,89 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Complainify - Complaint Management System</title>
 
-    <link rel="stylesheet" href="css/styles.css">
-</head>
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/theme.js"></script> 
+  </head>
 
-<body>
-
+  <body>
     <header class="navbar">
-        <div class="logo">
-            <a href="index.html">Complainify</a>
-        </div>
+      <div class="logo">
+        <a href="index.html">Complainify</a>
+      </div>
 
-        <div class="nav-buttons">
-            <a href="login.html" class="btn btn-outline">Login</a>
-            <a href="register.html" class="btn btn-primary">Register</a>
-        </div>
+      <div class="nav-buttons">
+        <a href="login.html" class="btn btn-outline">Login</a>
+        <a href="register.html" class="btn btn-primary">Register</a>
+
+        <button
+          type="button"
+          id="themeToggle"
+          class="btn btn-outline theme-toggle"
+        >
+          ☀️ Light mode
+        </button>
+      </div>
     </header>
 
-
     <main class="hero">
+      <section class="hero-content">
+        <div class="badge">Complaint Management System</div>
 
-        <section class="hero-content">
+        <h1>
+          Raise it.
+          <span>Track it.</span>
+          Resolve it.
+        </h1>
 
-            <div class="badge">
-                Complaint Management System
-            </div>
+        <p>
+          A simple and efficient platform to submit complaints, track their
+          progress, and manage resolutions.
+        </p>
 
-            <h1>
-                Raise it.
-                <span>Track it.</span>
-                Resolve it.
-            </h1>
+        <div class="hero-buttons">
+          <a href="register.html" class="btn btn-primary btn-large">
+            Get Started
+          </a>
 
-            <p>
-                A simple and efficient platform to submit complaints,
-                track their progress, and manage resolutions.
-            </p>
+          <a href="login.html" class="btn btn-outline btn-large"> Login </a>
+        </div>
+      </section>
 
-            <div class="hero-buttons">
-                <a href="register.html" class="btn btn-primary btn-large">
-                    Get Started
-                </a>
+      <section class="hero-card">
+        <div class="card-icon">✓</div>
 
-                <a href="login.html" class="btn btn-outline btn-large">
-                    Login
-                </a>
-            </div>
+        <h2>Complaint Tracking</h2>
 
-        </section>
+        <p>
+          Submit your complaint and keep track of its status from submission to
+          resolution.
+        </p>
 
+        <div class="status-list">
+          <div class="status-item">
+            <span class="status-dot pending"></span>
+            Pending
+          </div>
 
-        <section class="hero-card">
+          <div class="status-item">
+            <span class="status-dot progress"></span>
+            In Progress
+          </div>
 
-            <div class="card-icon">✓</div>
-
-            <h2>Complaint Tracking</h2>
-
-            <p>
-                Submit your complaint and keep track of its status
-                from submission to resolution.
-            </p>
-
-            <div class="status-list">
-
-                <div class="status-item">
-                    <span class="status-dot pending"></span>
-                    Pending
-                </div>
-
-                <div class="status-item">
-                    <span class="status-dot progress"></span>
-                    In Progress
-                </div>
-
-                <div class="status-item">
-                    <span class="status-dot resolved"></span>
-                    Resolved
-                </div>
-
-            </div>
-
-        </section>
-
+          <div class="status-item">
+            <span class="status-dot resolved"></span>
+            Resolved
+          </div>
+        </div>
+      </section>
     </main>
 
-
     <footer>
-        <p>
-            © 2026 Complainify · Complaint Management System
-        </p>
+      <p>© 2026 Complainify · Complaint Management System</p>
     </footer>
-
-</body>
+  </body>
 </html>

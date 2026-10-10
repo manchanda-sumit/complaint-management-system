@@ -1,176 +1,97 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
 
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Admin Dashboard - Complainify</title>
 
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
 
-</head>
-
-
-<body>
-
-<header class="navbar">
-
-    <div class="logo">
+  <body>
+    <header class="navbar">
+      <div class="logo">
         <a href="index.html">Complainify</a>
-    </div>
+      </div>
 
-    <div class="nav-buttons">
+      <div class="nav-buttons">
+        <span class="welcome-user"> Admin Panel </span>
 
-        <span class="welcome-user">
-            Admin Panel
-        </span>
+        <button id="adminLogoutBtn" class="btn btn-outline">Logout</button>
 
         <button
-            id="adminLogoutBtn"
-            class="btn btn-outline"
+          type="button"
+          id="themeToggle"
+          class="btn btn-outline theme-toggle"
         >
-            Logout
+          ☀️ Light mode
         </button>
+      </div>
+    </header>
 
-    </div>
+    <main class="dashboard-container">
+      <!-- HEADER -->
 
-</header>
-
-
-<main class="dashboard-container">
-
-
-    <!-- HEADER -->
-
-    <section class="dashboard-header">
-
+      <section class="dashboard-header">
         <div>
+          <div class="badge">Administration</div>
 
-            <div class="badge">
-                Administration
-            </div>
+          <h1>Admin Dashboard</h1>
 
-            <h1>
-                Admin Dashboard
-            </h1>
-
-            <p>
-                Manage complaints and update their status.
-            </p>
-
+          <p>Manage complaints and update their status.</p>
         </div>
+      </section>
 
-    </section>
+      <!-- STATISTICS -->
 
+      <section class="dashboard-stats">
+        <div class="stat-card">
+          <span class="stat-label"> Total Complaints </span>
 
-    <!-- STATISTICS -->
-
-    <section class="dashboard-stats">
+          <strong id="adminTotal"> 0 </strong>
+        </div>
 
         <div class="stat-card">
+          <span class="stat-label"> Pending </span>
 
-            <span class="stat-label">
-                Total Complaints
-            </span>
-
-            <strong id="adminTotal">
-                0
-            </strong>
-
+          <strong id="adminPending"> 0 </strong>
         </div>
-
 
         <div class="stat-card">
+          <span class="stat-label"> In Progress </span>
 
-            <span class="stat-label">
-                Pending
-            </span>
-
-            <strong id="adminPending">
-                0
-            </strong>
-
+          <strong id="adminProgress"> 0 </strong>
         </div>
-
 
         <div class="stat-card">
+          <span class="stat-label"> Resolved </span>
 
-            <span class="stat-label">
-                In Progress
-            </span>
-
-            <strong id="adminProgress">
-                0
-            </strong>
-
+          <strong id="adminResolved"> 0 </strong>
         </div>
+      </section>
 
+      <!-- ALL COMPLAINTS -->
 
-        <div class="stat-card">
-
-            <span class="stat-label">
-                Resolved
-            </span>
-
-            <strong id="adminResolved">
-                0
-            </strong>
-
-        </div>
-
-    </section>
-
-
-    <!-- ALL COMPLAINTS -->
-
-    <section class="dashboard-section">
-
+      <section class="dashboard-section">
         <div class="section-card">
+          <div class="section-heading">
+            <div>
+              <h2>All Complaints</h2>
 
-            <div class="section-heading">
-
-                <div>
-
-                    <h2>
-                        All Complaints
-                    </h2>
-
-                    <p>
-                        Review and manage submitted complaints.
-                    </p>
-
-                </div>
-
+              <p>Review and manage submitted complaints.</p>
             </div>
+          </div>
 
-
-            <div
-                id="adminComplaintsList"
-                class="complaints-list"
-            >
-
-                <p class="empty-message">
-                    Loading complaints...
-                </p>
-
-            </div>
-
+          <div id="adminComplaintsList" class="complaints-list">
+            <p class="empty-message">Loading complaints...</p>
+          </div>
         </div>
+      </section>
+    </main>
 
-    </section>
-
-
-</main>
-
-
-<script
-    type="module"
-    src="js/admin.js"
-></script>
-
-</body>
-
+    <script type="module" src="js/admin.js"></script>
+    <script src="js/theme.js"></script>
+  </body>
 </html>

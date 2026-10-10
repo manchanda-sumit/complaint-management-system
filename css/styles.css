@@ -1,14 +1,51 @@
+
+/* =========================
+   THEME VARIABLES
+========================= */
+
+:root {
+    color-scheme: dark;
+
+    --page-bg: #0b1020;
+    --surface-bg: #131a30;
+    --card-bg: #0d1428;
+    --input-bg: #0d1428;
+    --text-color: #ffffff;
+    --muted-text: #a9afc3;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --input-border: rgba(255, 255, 255, 0.15);
+    --link-color: #a79eff;
+    --progress-panel-bg: #131a30;
+}
+
+html[data-theme="light"] {
+    color-scheme: light;
+
+    --page-bg: #f3f5fb;
+    --surface-bg: #ffffff;
+    --card-bg: #ffffff;
+    --input-bg: #f8fafc;
+    --text-color: #1e293b;
+    --muted-text: #64748b;
+    --border-color: #e2e8f0;
+    --input-border: #cbd5e1;
+    --link-color: #6252d9;
+    --progress-panel-bg: #f8fafc;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background: #0b1020;
-    color: #ffffff;
+    background: var(--page-bg);
+    color: var(--text-color);
     min-height: 100vh;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
 
@@ -129,8 +166,8 @@ body {
 ========================= */
 
 .hero-card {
-    background: #131a30;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:  var(--surface-bg);
+    border-color: var(--border-color);
     border-radius: 20px;
     padding: 35px;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
@@ -170,9 +207,9 @@ body {
 }
 
 .status-item {
-    background: #0d1428;
+    background: var(--card-bg);
+    border-color: var(--border-color);
     padding: 14px;
-    border-radius: 10px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -245,8 +282,8 @@ footer {
 .auth-card {
     width: 100%;
     max-width: 450px;
-    background: #131a30;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:  var(--surface-bg);
+    border-color: var(--border-color);
     border-radius: 20px;
     padding: 40px;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
@@ -258,7 +295,7 @@ footer {
 }
 
 .auth-subtitle {
-    color: #a9afc3;
+    color: var(--muted-text);
     line-height: 1.6;
     margin-bottom: 30px;
 }
@@ -271,15 +308,16 @@ footer {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
+    color: var(--muted-text);
+
 }
 
 .form-group input {
     width: 100%;
     padding: 13px 15px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: #0d1428;
-    color: white;
+    background: var(--input-bg);
+    color: var(--text-color);
+    border-color: var(--input-border);
     font-size: 15px;
     outline: none;
 }
@@ -332,7 +370,7 @@ footer {
 }
 
 .dashboard-header p {
-    color: #a9afc3;
+    color: var(--muted-text);
     line-height: 1.6;
 }
 
@@ -349,8 +387,8 @@ footer {
 }
 
 .stat-card {
-    background: #131a30;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:  var(--surface-bg);
+    border-color: var(--border-color);
     border-radius: 16px;
     padding: 25px;
 }
@@ -376,8 +414,8 @@ footer {
 }
 
 .section-card {
-    background: #131a30;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:  var(--surface-bg);
+    border-color: var(--border-color);
     border-radius: 18px;
     padding: 30px;
 }
@@ -394,7 +432,7 @@ footer {
 }
 
 .section-heading p {
-    color: #a9afc3;
+    color: var(--muted-text);
 }
 
 
@@ -413,9 +451,9 @@ footer {
     width: 100%;
     padding: 13px 15px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: #0d1428;
-    color: white;
+    background: var(--input-bg);
+    color: var(--text-color);
+    border-color: var(--input-border);
     font-size: 15px;
     outline: none;
 }
@@ -428,6 +466,9 @@ footer {
 .form-group textarea {
     resize: vertical;
     min-height: 130px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    border-color: var(--input-border);
 }
 
 .complaint-submit-btn {
@@ -449,8 +490,8 @@ footer {
 }
 
 .complaint-card {
-    background: #0d1428;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--card-bg);
+    border-color: var(--border-color);
     border-radius: 14px;
     padding: 22px;
 }
@@ -530,7 +571,7 @@ footer {
 ========================= */
 
 .welcome-user {
-    color: #a9afc3;
+    color: var(--muted-text);
     margin-right: 15px;
 }
 
@@ -564,8 +605,8 @@ footer {
     .complaint-meta {
         flex-direction: column;
         gap: 8px;
+        color: var(--muted-text);
     }
-
 }
 
 /* =========================
@@ -745,9 +786,9 @@ footer {
     width: 100%;
     padding: 13px 15px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: #0d1428;
-    color: white;
+    background: var(--input-bg);
+    color: var(--text-color);
+    border-color: var(--input-border);
     font-size: 15px;
     outline: none;
 }
@@ -779,7 +820,7 @@ footer {
 }
 
 .admin-field label {
-    color: #a9afc3;
+    color: var(--muted-text);
     font-size: 13px;
     font-weight: 600;
 }
@@ -921,14 +962,15 @@ footer {
 .complaint-progress {
     margin: 20px 0;
     padding: 16px;
-    background: var(--card-bg, #f8fafc);
-    border: 1px solid var(--border-color, #e2e8f0);
+    background: var(--progress-panel-bg);
+    border-color: var(--border-color);
     border-radius: 12px;
 }
 
 .progress-heading {
     font-weight: 600;
     margin-bottom: 18px;
+    color: var(--text-color);
 }
 
 .progress-steps {
@@ -954,10 +996,10 @@ footer {
     justify-content: center;
     width: 30px;
     height: 30px;
-    border: 2px solid #cbd5e1;
     border-radius: 50%;
-    background: white;
-    color: #64748b;
+    background: var(--surface-bg);
+    color: var(--muted-text);
+    border-color: var(--input-border);
     font-size: 13px;
     font-weight: 700;
     z-index: 1;
@@ -978,12 +1020,12 @@ footer {
 
 .progress-label {
     font-size: 12px;
-    color: #64748b;
+    color: var(--muted-text);
 }
 
 .progress-step.completed .progress-label,
 .progress-step.current .progress-label {
-    color: var(--text-color, #1e293b);
+    color: var(--text-color);
     font-weight: 600;
 }
 
@@ -994,5 +1036,50 @@ footer {
 
     .progress-label {
         font-size: 10px;
+    }
+}
+
+/* Theme toggle */
+.theme-toggle {
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+html[data-theme="light"] .btn-outline {
+    color: var(--text-color);
+    border-color: #7c6cff;
+}
+
+html[data-theme="light"] .btn-outline:hover {
+    color: #ffffff;
+}
+
+html[data-theme="light"] .complaint-description {
+    color: var(--text-color);
+}
+
+html[data-theme="light"] .complaint-date,
+html[data-theme="light"] .history-content p,
+html[data-theme="light"] .history-content small {
+    color: var(--muted-text);
+}
+
+@media (max-width: 600px) {
+    .navbar {
+        gap: 12px;
+        height: auto;
+        min-height: 75px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        flex-wrap: wrap;
+    }
+
+    .nav-buttons {
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .theme-toggle {
+        padding: 9px 12px;
     }
 }
