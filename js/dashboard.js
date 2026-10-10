@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase.js";
+import { showToast } from "./toast.js";
 
 import {
     onAuthStateChanged,
@@ -235,7 +236,7 @@ complaintForm.addEventListener(
 
             complaintMessage.textContent =
                 "Complaint submitted successfully!";
-
+            showToast("Your complaint has been submitted successfully.", "success");
 
             complaintForm.reset();
 
@@ -251,6 +252,7 @@ complaintForm.addEventListener(
 
             complaintMessage.textContent =
                 "Unable to submit complaint. Please try again.";
+            showToast("Unable to submit complaint. Please try again.", "error");
 
         }
 
@@ -392,6 +394,7 @@ async function loadComplaints() {
                 Unable to load complaints.
             </p>
         `;
+        showToast("Unable to load your complaints. Please refresh and try again.", "error");
 
     }
 
@@ -731,6 +734,7 @@ async function loadComplaintHistory(
                 Unable to load complaint history.
             </p>
         `;
+        showToast("Unable to load complaint history.", "error");
 
     }
 

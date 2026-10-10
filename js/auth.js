@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase.js";
+import { showToast } from "./toast.js";
 
 import {
     createUserWithEmailAndPassword,
@@ -60,6 +61,7 @@ if (registerForm) {
 
             message.textContent =
                 "Account created successfully! Redirecting...";
+            showToast("Account created successfully. Welcome to Complainify!", "success");
 
             setTimeout(() => {
                 window.location.href = "dashboard.html";
@@ -70,8 +72,9 @@ if (registerForm) {
 
             console.error(error);
 
-            message.textContent =
-                getErrorMessage(error.code);
+            const friendlyMessage = getErrorMessage(error.code);
+            message.textContent = friendlyMessage;
+            showToast(friendlyMessage, "error");
 
         }
 
@@ -129,17 +132,26 @@ if (loginForm) {
 
                 if (userData.role === "admin") {
 
-                    window.location.href = "admin.html";
+                    showToast("Login successful. Welcome back!", "success");
+                    setTimeout(() => {
+                        window.location.href = "admin.html";
+                    }, 650);
 
                 } else {
 
-                    window.location.href = "dashboard.html";
+                    showToast("Login successful. Welcome back!", "success");
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 650);
 
                 }
 
             } else {
 
-                window.location.href = "dashboard.html";
+                showToast("Login successful. Welcome back!", "success");
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 650);
 
             }
 
@@ -148,8 +160,9 @@ if (loginForm) {
 
             console.error(error);
 
-            message.textContent =
-                getErrorMessage(error.code);
+            const friendlyMessage = getErrorMessage(error.code);
+            message.textContent = friendlyMessage;
+            showToast(friendlyMessage, "error");
 
         }
 
