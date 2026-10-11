@@ -8,6 +8,7 @@
     <title>Admin Dashboard - Complainify</title>
 
     <link rel="stylesheet" href="css/styles.css" />
+    <script type="module" src="js/notifications.js"></script>
   </head>
 
   <body>
@@ -69,6 +70,105 @@
           <span class="stat-label"> Resolved </span>
 
           <strong id="adminResolved"> 0 </strong>
+        </div>  
+      </section>
+
+      <!-- ANALYTICS AND REPORTS -->
+      <section class="dashboard-section">
+        <div class="section-card">
+          <div class="section-heading">
+            <div>
+              <h2>Dashboard Analytics</h2>
+              <p>
+                Understand complaint distribution and resolution performance.
+              </p>
+            </div>
+          </div>
+
+          <div class="analytics-grid">
+            <article class="analytics-card">
+              <h3>Complaints by status</h3>
+              <div id="statusAnalytics" class="analytics-bars"></div>
+            </article>
+
+            <article class="analytics-card">
+              <h3>Complaints by category</h3>
+              <div id="categoryAnalytics" class="analytics-bars"></div>
+            </article>
+
+            <article class="analytics-card">
+              <h3>Complaints by priority</h3>
+              <div id="priorityAnalytics" class="analytics-bars"></div>
+            </article>
+
+            <article class="analytics-card">
+              <h3>Resolution overview</h3>
+              <div id="resolutionAnalytics" class="resolution-overview"></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- REPORTS -->
+      <section class="dashboard-section">
+        <div class="section-card">
+          <div class="section-heading">
+            <div>
+              <h2>Complaint Reports</h2>
+              <p>
+                Filter complaints by submission date and export the results.
+              </p>
+            </div>
+          </div>
+
+          <div class="report-filters">
+            <div class="form-group">
+              <label for="reportStartDate">From date</label>
+              <input type="date" id="reportStartDate" />
+            </div>
+
+            <div class="form-group">
+              <label for="reportEndDate">To date</label>
+              <input type="date" id="reportEndDate" />
+            </div>
+
+            <div class="form-group">
+              <label for="reportStatus">Status</label>
+              <select id="reportStatus">
+                <option value="All">All statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="reportCategory">Category</label>
+              <select id="reportCategory">
+                <option value="All">All categories</option>
+                <option>Academic</option>
+                <option>Infrastructure</option>
+                <option>IT / Technical</option>
+                <option>Administration</option>
+                <option>Facilities</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="report-actions">
+            <button type="button" class="btn btn-primary" id="exportReportBtn">
+              Export CSV
+            </button>
+            <button type="button" class="btn btn-outline" id="printReportBtn">
+              Print report
+            </button>
+            <button type="button" class="btn btn-outline" id="resetReportBtn">
+              Reset filters
+            </button>
+          </div>
+
+          <p id="reportSummary" class="report-summary"></p>
         </div>
       </section>
 

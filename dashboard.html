@@ -8,6 +8,7 @@
 
     <link rel="stylesheet" href="css/styles.css" />
     <script src="js/theme.js"></script>
+    <script type="module" src="js/notifications.js"></script>
   </head>
 
   <body>
@@ -168,6 +169,99 @@
           </div>
         </div>
       </section>
+
+      <!-- Edit Complaint Modal -->
+      <div
+        id="editComplaintModal"
+        class="modal-overlay"
+        aria-hidden="true"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="editComplaintHeading"
+      >
+        <div class="modal-card">
+          <div class="modal-header">
+            <div>
+              <span class="badge">Edit complaint</span>
+              <h2 id="editComplaintHeading">Update your complaint</h2>
+              <p>Make changes to your complaint details below.</p>
+            </div>
+            <button
+              type="button"
+              class="modal-close"
+              id="closeEditComplaint"
+              aria-label="Close edit form"
+            >
+              ×
+            </button>
+          </div>
+
+          <form id="editComplaintForm">
+            <div class="form-group">
+              <label for="editComplaintTitle">Complaint title</label>
+              <input
+                id="editComplaintTitle"
+                type="text"
+                maxlength="120"
+                required
+              />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editComplaintCategory">Category</label>
+                <select id="editComplaintCategory" required>
+                  <option value="Academic">Academic</option>
+                  <option value="Infrastructure">Infrastructure</option>
+                  <option value="IT / Technical">IT / Technical</option>
+                  <option value="Administration">Administration</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="editComplaintPriority">Priority</label>
+                <select id="editComplaintPriority" required>
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="editComplaintDescription"
+                >Complaint description</label
+              >
+              <textarea
+                id="editComplaintDescription"
+                rows="5"
+                maxlength="3000"
+                required
+              ></textarea>
+            </div>
+
+            <p id="editComplaintError" class="message" role="alert"></p>
+
+            <div class="modal-actions">
+              <button
+                type="button"
+                class="btn btn-outline"
+                id="cancelEditComplaint"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="saveEditComplaint"
+              >
+                Save changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </main>
 
     <script type="module" src="js/dashboard.js"></script>
