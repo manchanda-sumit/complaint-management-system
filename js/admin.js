@@ -107,6 +107,11 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
+// Refresh dashboard records after a mutation made from the DevTools query console.
+window.addEventListener("complainify:firestore-mutated", () => {
+  loadAllComplaints();
+});
+
 /* =========================
    COMPLAINT FILTERS
 ========================= */
